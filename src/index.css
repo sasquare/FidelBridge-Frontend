@@ -1,0 +1,20 @@
+/* Tailwind directives - these are valid */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom styles */
+body {
+  font-family: "Roboto", sans-serif;
+}
+
+/* Fix VS Code warnings by adding this to settings.json */
+/* Create .vscode/settings.json if it doesn't exist */
+/*
+{
+  "css.customData": [".vscode/tailwind.json"],
+  "tailwindCSS.includeLanguages": {
+    "plaintext": "css"
+  }
+}
+*/
