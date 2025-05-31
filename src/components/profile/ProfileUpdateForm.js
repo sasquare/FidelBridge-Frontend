@@ -27,7 +27,6 @@ function ProfileUpdateForm({ user, onUpdate, isProfessional, authToken }) {
     }),
   };
 
-  // Ensure nested objects always exist to avoid undefined errors
   if (isProfessional) {
     initialFormData.contact = initialFormData.contact || { address: "", phone: "" };
     initialFormData.links = initialFormData.links || { portfolio: "", socialMedia: {}, email: "" };
@@ -82,31 +81,38 @@ function ProfileUpdateForm({ user, onUpdate, isProfessional, authToken }) {
     setSuccess("");
 
     try {
-      const response = await axios.put("/users/update", formData, {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-          "Content-Type": "application/json",
-        },
-      });
+      const data = new FormData();
+      data.append("name", formData.name);
+      data.append("email", formData.email);
+
+      if (isProfessional) {
+        data.append("headline", formData.headline || "");
+        data.append("serviceType", formData.serviceType || "");
+        data.append("businessRegNumber", formData.businessRegNumber || "");
+        data.append("contact[address]", formData.contact.address || "");
+        data.append("contact[phone]", formData.contact.phone || "");
+        data.append("links[portfolio]", formData.links.portfolio || "");
+        data.append("links[email]", formData.links.email || "");
+        data.append("links[socialMedia][twitter]", formData.links.socialMedia.twitter || "");
+        data.append("links[socialMedia][linkedin]", formData.links.socialMedia.linkedin || "");
+        data.append("links[socialMedia][instagram]", formData.links.socialMedia.instagram || "");
+      }
 
       if (picture) {
-        const picFormData = new FormData();
-        picFormData.append("picture", picture);
-
-        await axios.post("/users/upload-picture", picFormData, {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-            "Content-Type": "multipart/form-data",
-          },
-        });
+        data.append("picture", picture);
       }
+
+      const response = await axios.put("/api/users/update", data, {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
       setSuccess("Profile updated successfully!");
       onUpdate && onUpdate(response.data.user);
     } catch (err) {
-      setError(
-        err.response?.data?.message || "Update failed. Please try again."
-      );
+      setError(err.response?.data?.message || "Update failed. Please try again.");
     }
   };
 
