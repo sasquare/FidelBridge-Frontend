@@ -1,20 +1,13 @@
 import { useState, useEffect } from "react";
 import axios from "../utils/axiosConfig";
 import { Container, Row, Col, Alert, Spinner } from "react-bootstrap";
-import io from "socket.io-client";
+import socket from "../socket";  // <-- Import shared socket instance
 import ProfileHeader from "../components/profile/ProfileHeader";
 import PortfolioSection from "../components/profile/PortfolioSection";
 import LinksSection from "../components/profile/LinksSection";
 import ContactSection from "../components/profile/ContactSection";
 import ProfileUpdateForm from "../components/profile/ProfileUpdateForm";
 import "../components/profile/Profile.css";
-
-const SOCKET_URL = process.env.REACT_APP_SOCKET_URL || "http://localhost:5000";
-const socket = io(SOCKET_URL, {
-  transports: ["websocket", "polling"],
-  withCredentials: true,       // <-- Add this line
-});
-
 
 function Profile() {
   const [user, setUser] = useState(null);
