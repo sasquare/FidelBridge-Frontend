@@ -12,7 +12,9 @@ import "../components/profile/Profile.css";
 const SOCKET_URL = process.env.REACT_APP_SOCKET_URL || "http://localhost:5000";
 const socket = io(SOCKET_URL, {
   transports: ["websocket", "polling"],
+  withCredentials: true,       // <-- Add this line
 });
+
 
 function Profile() {
   const [user, setUser] = useState(null);
