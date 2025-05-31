@@ -10,9 +10,10 @@ import LinksSection from "../components/profile/LinksSection";
 import ContactSection from "../components/profile/ContactSection";
 import "../components/profile/Profile.css";
 
-const socket = io("http://localhost:5000", {
-  transports: ["websocket", "polling"],
-});
+const socket = io(
+  process.env.REACT_APP_SOCKET_URL || 'servicehub-zxrdgmbv.b4a.run'
+);
+
 
 function ProfessionalProfile() {
   const { id } = useParams();
