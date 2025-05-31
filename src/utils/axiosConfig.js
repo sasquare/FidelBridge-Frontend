@@ -2,7 +2,7 @@ import axios from "axios";
 
 const instance = axios.create({
   baseURL:
-    process.env.REACT_APP_API_URL || "https://servicehub-zxrdgmbv.b4a.run",
+    process.env.REACT_APP_API_URL || "https://fidelbridge-backend.onrender.com/api/users",
   timeout: 10000,
   withCredentials: true,
 });
