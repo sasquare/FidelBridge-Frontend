@@ -27,25 +27,26 @@ function ProfileUpdateForm({ user, onUpdate, isProfessional, authToken }) {
     }),
   };
 
+  // Ensure nested objects always exist to avoid undefined errors
+  if (isProfessional) {
+    initialFormData.contact = initialFormData.contact || { address: "", phone: "" };
+    initialFormData.links = initialFormData.links || { portfolio: "", socialMedia: {}, email: "" };
+    initialFormData.links.socialMedia = initialFormData.links.socialMedia || {
+      twitter: "",
+      linkedin: "",
+      instagram: "",
+    };
+  }
+
   const [formData, setFormData] = useState(initialFormData);
   const [picture, setPicture] = useState(null);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
   const serviceTypes = [
-    "Plumbing",
-    "Tutoring",
-    "Cleaning",
-    "Electrical",
-    "Carpentry",
-    "Haircut",
-    "Gardening",
-    "Fashion Designing",
-    "Moving",
-    "Photography",
-    "Catering",
-    "Personal Training",
-    "Accounting",
+    "Plumbing", "Tutoring", "Cleaning", "Electrical", "Carpentry", "Haircut",
+    "Gardening", "Fashion Designing", "Moving", "Photography", "Catering",
+    "Personal Training", "Accounting"
   ];
 
   const handleChange = (e) => {
@@ -81,7 +82,6 @@ function ProfileUpdateForm({ user, onUpdate, isProfessional, authToken }) {
     setSuccess("");
 
     try {
-      // 1. Send profile updates as JSON (exclude picture and video)
       const response = await axios.put("/users/update", formData, {
         headers: {
           Authorization: `Bearer ${authToken}`,
@@ -89,7 +89,6 @@ function ProfileUpdateForm({ user, onUpdate, isProfessional, authToken }) {
         },
       });
 
-      // 2. If picture selected, upload it separately
       if (picture) {
         const picFormData = new FormData();
         picFormData.append("picture", picture);
@@ -177,7 +176,6 @@ function ProfileUpdateForm({ user, onUpdate, isProfessional, authToken }) {
             />
           </Form.Group>
 
-          {/* Contact Info */}
           <Form.Group controlId="contact.address" className="mt-3">
             <Form.Label>Address</Form.Label>
             <Form.Control
@@ -198,7 +196,6 @@ function ProfileUpdateForm({ user, onUpdate, isProfessional, authToken }) {
             />
           </Form.Group>
 
-          {/* Links */}
           <Form.Group controlId="links.portfolio" className="mt-3">
             <Form.Label>Portfolio URL</Form.Label>
             <Form.Control
@@ -249,7 +246,6 @@ function ProfileUpdateForm({ user, onUpdate, isProfessional, authToken }) {
             />
           </Form.Group>
 
-          {/* Picture upload */}
           <Form.Group controlId="picture" className="mt-3">
             <Form.Label>Profile Picture</Form.Label>
             <Form.Control
