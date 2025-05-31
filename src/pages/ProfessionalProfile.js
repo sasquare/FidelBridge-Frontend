@@ -2,20 +2,13 @@ import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "../utils/axiosConfig";
 import { Container, Row, Col, Alert, Button, Spinner } from "react-bootstrap";
-import io from "socket.io-client";
+import socket from "../socket";  // <-- Import shared socket instance
 import ReactStars from "react-rating-stars-component";
 import ProfileHeader from "../components/profile/ProfileHeader";
 import PortfolioSection from "../components/profile/PortfolioSection";
 import LinksSection from "../components/profile/LinksSection";
 import ContactSection from "../components/profile/ContactSection";
 import "../components/profile/Profile.css";
-
-const SOCKET_URL = process.env.REACT_APP_SOCKET_URL || "http://localhost:5000";
-const socket = io(SOCKET_URL, {
-  transports: ["websocket", "polling"],
-  withCredentials: true,
-});
-
 
 function ProfessionalProfile() {
   const { id } = useParams();
