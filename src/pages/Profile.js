@@ -9,8 +9,7 @@ import ContactSection from "../components/profile/ContactSection";
 import ProfileUpdateForm from "../components/profile/ProfileUpdateForm";
 import "../components/profile/Profile.css";
 
-// ✅ Fix: Use dynamic WebSocket URL based on environment
-const SOCKET_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
+const SOCKET_URL = process.env.REACT_APP_SOCKET_URL || "http://localhost:5000";
 const socket = io(SOCKET_URL, {
   transports: ["websocket", "polling"],
 });
@@ -30,9 +29,7 @@ function Profile() {
           setLoading(false);
           return;
         }
-        const res = await axios.get("/api/users/profile", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await axios.get("/profile"); // API base is already set
         setUser(res.data);
         setIsOnline(res.data.isOnline);
         setLoading(false);
@@ -66,11 +63,8 @@ function Profile() {
     setUser((prev) => ({ ...prev, picture: newPictureUrl }));
   };
 
-  if (loading)
-    return <Spinner animation="border" className="mt-5 mx-auto d-block" />;
-
+  if (loading) return <Spinner animation="border" className="mt-5 mx-auto d-block" />;
   if (!user && error) return <Alert variant="danger">{error}</Alert>;
-
   if (!user) return <div>Loading...</div>;
 
   const isProfessional = user.role === "professional";
@@ -81,9 +75,7 @@ function Profile() {
         <Col md={3} className="sidebar">
           <div className="status-box">
             <h4>Status</h4>
-            <div
-              className={`status-indicator ${isOnline ? "online" : "offline"}`}
-            >
+            <div className={`status-indicator ${isOnline ? "online" : "offline"}`}>
               {isOnline ? "Online" : "Offline"}
             </div>
           </div>
@@ -104,9 +96,7 @@ function Profile() {
                   style={{ maxHeight: "400px" }}
                 >
                   <source
-                    src={`${
-                      process.env.REACT_APP_API_URL || "http://localhost:5000"
-                    }${user.videoUrl}`}
+                    src={`${process.env.REACT_APP_API_URL || "http://localhost:5000"}${user.videoUrl}`}
                     type="video/mp4"
                   />
                   Your browser does not support the video tag.
