@@ -45,7 +45,7 @@ function ProfileHeader({ user, onPictureUpdate }) {
       <Card.Body>
         <div className="d-flex align-items-center">
           <Image
-            src={user?.picture || "https://via.placeholder.com/150"}
+            src={user?.picture || "/images/default-profile.png"}
             roundedCircle
             style={{ width: "100px", height: "100px", objectFit: "cover" }}
           />
