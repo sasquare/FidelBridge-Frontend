@@ -12,8 +12,15 @@ function ProfileHeader({ user, onPictureUpdate }) {
     if (!picture) return;
     const formData = new FormData();
     formData.append("picture", picture);
+
     try {
       const token = localStorage.getItem("token");
+      if (!token) {
+        setError("User not authenticated");
+        setSuccess("");
+        return;
+      }
+
       const res = await axios.post("/api/users/upload-picture", formData, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -23,7 +30,9 @@ function ProfileHeader({ user, onPictureUpdate }) {
       setSuccess(res.data.message || "Picture uploaded successfully");
       setError("");
       setPicture(null);
-      onPictureUpdate(res.data.pictureUrl);
+      if (res.data.pictureUrl) {
+        onPictureUpdate(res.data.pictureUrl);
+      }
     } catch (err) {
       setError(err.response?.data?.message || "Failed to upload picture");
       setSuccess("");
@@ -36,14 +45,14 @@ function ProfileHeader({ user, onPictureUpdate }) {
       <Card.Body>
         <div className="d-flex align-items-center">
           <Image
-            src={user.picture || "https://via.placeholder.com/150"}
+            src={user?.picture || "https://via.placeholder.com/150"}
             roundedCircle
             style={{ width: "100px", height: "100px", objectFit: "cover" }}
           />
           <div className="ms-3">
-            <h3>{user.name}</h3>
-            <p>{user.headline || "No tagline"}</p>
-            {user.averageRating && (
+            <h3>{user?.name || "No Name"}</h3>
+            <p>{user?.headline || "No tagline"}</p>
+            {user?.averageRating && (
               <ReactStars
                 count={5}
                 value={user.averageRating}
@@ -54,7 +63,7 @@ function ProfileHeader({ user, onPictureUpdate }) {
             )}
           </div>
         </div>
-        {user.role === "professional" && (
+        {user?.role === "professional" && (
           <div className="mt-3">
             {error && <Alert variant="danger">{error}</Alert>}
             {success && <Alert variant="success">{success}</Alert>}
