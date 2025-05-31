@@ -24,7 +24,11 @@ function Profile() {
           setLoading(false);
           return;
         }
-        const res = await axios.get("/profile"); // API base is already set
+        const res = await axios.get("/api/auth/profile", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         setUser(res.data);
         setIsOnline(res.data.isOnline);
         setLoading(false);
