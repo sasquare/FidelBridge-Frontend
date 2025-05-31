@@ -11,7 +11,7 @@ import ContactSection from "../components/profile/ContactSection";
 import "../components/profile/Profile.css";
 
 const socket = io(
-  process.env.REACT_APP_SOCKET_URL || 'servicehub-zxrdgmbv.b4a.run'
+  process.env.REACT_APP_SOCKET_URL || 'https://fidelbridge-backend.onrender.com'
 );
 
 
