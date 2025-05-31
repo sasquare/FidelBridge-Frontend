@@ -2,8 +2,7 @@ import { useState } from "react";
 import { Form, Button, Alert } from "react-bootstrap";
 import axios from "../../utils/axiosConfig";
 
-function ProfileUpdateForm({ user, onUpdate, isProfessional }) {
-  // Initialize form data with user info and nested objects if professional
+function ProfileUpdateForm({ user, onUpdate, isProfessional, authToken }) {
   const initialFormData = {
     name: user?.name || "",
     email: user?.email || "",
@@ -30,7 +29,6 @@ function ProfileUpdateForm({ user, onUpdate, isProfessional }) {
 
   const [formData, setFormData] = useState(initialFormData);
   const [picture, setPicture] = useState(null);
-  const [video, setVideo] = useState(null);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
@@ -50,12 +48,10 @@ function ProfileUpdateForm({ user, onUpdate, isProfessional }) {
     "Accounting",
   ];
 
-  // Handles changes for inputs, supports nested keys with dot notation like "contact.address"
   const handleChange = (e) => {
     const { name, value } = e.target;
 
     if (name.includes(".")) {
-      // For nested keys e.g. contact.address
       const keys = name.split(".");
       setFormData((prev) => {
         const updated = { ...prev };
@@ -74,9 +70,8 @@ function ProfileUpdateForm({ user, onUpdate, isProfessional }) {
 
   const handleFileChange = (e) => {
     const { name, files } = e.target;
-    if (files.length > 0) {
-      if (name === "picture") setPicture(files[0]);
-      else if (name === "video") setVideo(files[0]);
+    if (files.length > 0 && name === "picture") {
+      setPicture(files[0]);
     }
   };
 
@@ -86,38 +81,38 @@ function ProfileUpdateForm({ user, onUpdate, isProfessional }) {
     setSuccess("");
 
     try {
-      const formPayload = new FormData();
-
-      // Helper to append nested data recursively
-      const appendFormData = (data, parentKey = "") => {
-        Object.entries(data).forEach(([key, value]) => {
-          const formKey = parentKey ? `${parentKey}.${key}` : key;
-          if (value && typeof value === "object" && !Array.isArray(value) && !(value instanceof File)) {
-            appendFormData(value, formKey);
-          } else {
-            formPayload.append(formKey, value);
-          }
-        });
-      };
-
-      appendFormData(formData);
-
-      if (picture) formPayload.append("picture", picture);
-      if (video) formPayload.append("video", video);
-
-      const response = await axios.put("/profile/update", formPayload, {
-        headers: { "Content-Type": "multipart/form-data" },
+      // 1. Send profile updates as JSON (exclude picture and video)
+      const response = await axios.put("/users/update", formData, {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+          "Content-Type": "application/json",
+        },
       });
 
+      // 2. If picture selected, upload it separately
+      if (picture) {
+        const picFormData = new FormData();
+        picFormData.append("picture", picture);
+
+        await axios.post("/users/upload-picture", picFormData, {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+            "Content-Type": "multipart/form-data",
+          },
+        });
+      }
+
       setSuccess("Profile updated successfully!");
-      onUpdate && onUpdate(response.data);
+      onUpdate && onUpdate(response.data.user);
     } catch (err) {
-      setError(err.response?.data?.message || "Update failed. Please try again.");
+      setError(
+        err.response?.data?.message || "Update failed. Please try again."
+      );
     }
   };
 
   return (
-    <Form onSubmit={handleSubmit} encType="multipart/form-data">
+    <Form onSubmit={handleSubmit}>
       {error && <Alert variant="danger">{error}</Alert>}
       {success && <Alert variant="success">{success}</Alert>}
 
@@ -254,23 +249,13 @@ function ProfileUpdateForm({ user, onUpdate, isProfessional }) {
             />
           </Form.Group>
 
-          {/* File inputs */}
+          {/* Picture upload */}
           <Form.Group controlId="picture" className="mt-3">
             <Form.Label>Profile Picture</Form.Label>
             <Form.Control
               type="file"
               name="picture"
               accept="image/*"
-              onChange={handleFileChange}
-            />
-          </Form.Group>
-
-          <Form.Group controlId="video" className="mt-3">
-            <Form.Label>Introduction Video</Form.Label>
-            <Form.Control
-              type="file"
-              name="video"
-              accept="video/*"
               onChange={handleFileChange}
             />
           </Form.Group>
