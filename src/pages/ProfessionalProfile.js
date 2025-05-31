@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "../utils/axiosConfig";
 import { Container, Row, Col, Alert, Button, Spinner } from "react-bootstrap";
 import io from "socket.io-client";
-import { useParams } from "react-router-dom";
 import ReactStars from "react-rating-stars-component";
 import ProfileHeader from "../components/profile/ProfileHeader";
 import PortfolioSection from "../components/profile/PortfolioSection";
@@ -38,12 +37,13 @@ function ProfessionalProfile() {
         });
         setProfessional(res.data);
         setIsOnline(res.data.isOnline);
-        setLoading(false);
       } catch (err) {
         setError(err.response?.data?.message || "Failed to load professional");
+      } finally {
         setLoading(false);
       }
     };
+
     fetchProfessional();
 
     socket.on("statusUpdate", ({ userId, isOnline }) => {
@@ -75,9 +75,7 @@ function ProfessionalProfile() {
   };
 
   if (loading) return <Spinner animation="border" className="mt-5 mx-auto" />;
-
   if (!professional && error) return <Alert variant="danger">{error}</Alert>;
-
   if (!professional) return <div>Loading...</div>;
 
   return (
