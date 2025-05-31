@@ -10,10 +10,10 @@ import LinksSection from "../components/profile/LinksSection";
 import ContactSection from "../components/profile/ContactSection";
 import "../components/profile/Profile.css";
 
-const socket = io(
-  process.env.REACT_APP_SOCKET_URL || 'https://fidelbridge-backend.onrender.com'
-);
-
+const SOCKET_URL = process.env.REACT_APP_SOCKET_URL || "http://localhost:5000";
+const socket = io(SOCKET_URL, {
+  transports: ["websocket", "polling"],
+});
 
 function ProfessionalProfile() {
   const { id } = useParams();
@@ -33,9 +33,7 @@ function ProfessionalProfile() {
           setLoading(false);
           return;
         }
-        const res = await axios.get(`/api/users/${id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await axios.get(`/users/${id}`);
         setProfessional(res.data);
         setIsOnline(res.data.isOnline);
       } catch (err) {
@@ -64,7 +62,7 @@ function ProfessionalProfile() {
     try {
       const token = localStorage.getItem("token");
       await axios.post(
-        `/api/users/${id}/rate`,
+        `/users/${id}/rate`,
         { score: newRating, comment: "" },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -85,16 +83,11 @@ function ProfessionalProfile() {
         <Col md={3} className="sidebar">
           <div className="status-box">
             <h4>Status</h4>
-            <div
-              className={`status-indicator ${isOnline ? "online" : "offline"}`}
-            >
+            <div className={`status-indicator ${isOnline ? "online" : "offline"}`}>
               {isOnline ? "Online" : "Offline"}
             </div>
           </div>
-          <Button
-            className="message-button w-100 mt-3"
-            onClick={handleMessageClick}
-          >
+          <Button className="message-button w-100 mt-3" onClick={handleMessageClick}>
             Message {professional.name}
           </Button>
           <div className="mt-3">
@@ -124,9 +117,7 @@ function ProfessionalProfile() {
                   style={{ maxHeight: "400px" }}
                 >
                   <source
-                    src={`${
-                      process.env.REACT_APP_API_URL || "http://localhost:5000"
-                    }${professional.videoUrl}`}
+                    src={`${process.env.REACT_APP_API_URL || "http://localhost:5000"}${professional.videoUrl}`}
                     type="video/mp4"
                   />
                   Your browser does not support the video tag.
