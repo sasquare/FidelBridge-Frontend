@@ -1,8 +1,7 @@
 import axios from "axios";
 
 const instance = axios.create({
-  baseURL:
-    process.env.REACT_APP_API_URL || "https://fidelbridge-backend.onrender.com/api/users",
+  baseURL: process.env.REACT_APP_API_URL || "https://fidelbridge-backend.onrender.com/api",
   timeout: 10000,
   withCredentials: true,
 });
@@ -21,9 +20,7 @@ instance.interceptors.request.use(
 );
 
 instance.interceptors.response.use(
-  (response) => {
-    return response;
-  },
+  (response) => response,
   (error) => {
     if (error.response?.status === 401) {
       localStorage.removeItem("token");
