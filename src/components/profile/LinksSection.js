@@ -1,6 +1,8 @@
 const LinksSection = ({ links }) => {
   if (!links) return null;
 
+  const socialMedia = links.socialMedia || {};
+
   return (
     <>
       <h3 className="section-title mt-4">Links</h3>
@@ -21,9 +23,9 @@ const LinksSection = ({ links }) => {
           )}
         </p>
         {[
-          { label: "Twitter", url: links.socialMedia?.twitter },
-          { label: "LinkedIn", url: links.socialMedia?.linkedin },
-          { label: "Instagram", url: links.socialMedia?.instagram },
+          { label: "Twitter", url: socialMedia.twitter },
+          { label: "LinkedIn", url: socialMedia.linkedin },
+          { label: "Instagram", url: socialMedia.instagram },
         ].map((link, index) => (
           <p key={index}>
             <strong>{link.label}:</strong>{" "}
