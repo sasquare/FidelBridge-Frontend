@@ -9,7 +9,9 @@ import ContactSection from "../components/profile/ContactSection";
 import ProfileUpdateForm from "../components/profile/ProfileUpdateForm";
 import "../components/profile/Profile.css";
 
-const socket = io("http://localhost:5000", {
+// ✅ Fix: Use dynamic WebSocket URL based on environment
+const SOCKET_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
+const socket = io(SOCKET_URL, {
   transports: ["websocket", "polling"],
 });
 
@@ -40,19 +42,21 @@ function Profile() {
       }
     };
     fetchProfile();
-  }, []); // No dependencies to avoid re-fetching
+  }, []);
 
   useEffect(() => {
     if (!user) return;
+
     socket.emit("setOnline", user._id);
     socket.on("statusUpdate", ({ userId, isOnline }) => {
       if (userId === user._id) setIsOnline(isOnline);
     });
+
     return () => {
       socket.emit("setOffline", user._id);
       socket.off("statusUpdate");
     };
-  }, [user]); // Added user to dependency array
+  }, [user]);
 
   const handleUpdate = (updatedUser) => {
     setUser(updatedUser);
@@ -62,7 +66,8 @@ function Profile() {
     setUser((prev) => ({ ...prev, picture: newPictureUrl }));
   };
 
-  if (loading) return <Spinner animation="border" className="mt-5 mx-auto" />;
+  if (loading)
+    return <Spinner animation="border" className="mt-5 mx-auto d-block" />;
 
   if (!user && error) return <Alert variant="danger">{error}</Alert>;
 
