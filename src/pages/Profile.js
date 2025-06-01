@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "../utils/axiosConfig";
 import { Container, Row, Col, Alert, Spinner } from "react-bootstrap";
-import socket from "../socket";  // <-- Import shared socket instance
+import socket from "../socket"; // Import shared socket instance
 import ProfileHeader from "../components/profile/ProfileHeader";
 import PortfolioSection from "../components/profile/PortfolioSection";
 import LinksSection from "../components/profile/LinksSection";
@@ -93,6 +93,7 @@ function Profile() {
                   controls
                   className="w-100 rounded-lg"
                   style={{ maxHeight: "400px" }}
+                  onError={(e) => (e.target.src = "/fallback-video.mp4")}
                 >
                   <source
                     src={`${process.env.REACT_APP_API_URL || "http://localhost:5000"}${user.videoUrl}`}
