@@ -102,7 +102,8 @@ function ProfileUpdateForm({ user, onUpdate, isProfessional, authToken }) {
         data.append("picture", picture);
       }
 
-      const response = await axios.put("/api/users/update", data, {
+      // UPDATED HERE: changed URL to /profile/update to match backend
+      const response = await axios.put("/profile/update", data, {
         headers: {
           Authorization: `Bearer ${authToken}`,
           "Content-Type": "multipart/form-data",
