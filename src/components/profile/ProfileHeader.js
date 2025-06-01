@@ -40,12 +40,18 @@ function ProfileHeader({ user, onPictureUpdate }) {
     }
   };
 
+  // *** CHANGE: Use environment variable to build full image URL to avoid mixed content ***
+  const imageBaseUrl = process.env.REACT_APP_IMAGE_BASE_URL || "";
+  const profileImage = user?.picture
+    ? `${imageBaseUrl}/uploads/${user.picture}`
+    : "/images/default-profile.png";
+
   return (
     <Card className="mb-4">
       <Card.Body>
         <div className="d-flex align-items-center">
           <Image
-            src={user?.picture || "/images/default-profile.png"}
+            src={profileImage}
             roundedCircle
             style={{ width: "100px", height: "100px", objectFit: "cover" }}
           />
