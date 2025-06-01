@@ -8,6 +8,19 @@ function ProfileHeader({ user, onPictureUpdate }) {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
+  // 🔥 Setup Image Base URL
+  const imageBaseUrl = process.env.REACT_APP_IMAGE_BASE_URL || "https://fidelbridge-backend.onrender.com";
+
+  // 🔍 Determine the correct image source
+  let profileImage = "/images/default-profile.png";
+  if (user?.picture) {
+    if (user.picture.startsWith("http")) {
+      profileImage = user.picture;
+    } else {
+      profileImage = `${imageBaseUrl}/uploads/${user.picture}`;
+    }
+  }
+
   const handlePictureUpload = async () => {
     if (!picture) return;
     const formData = new FormData();
@@ -27,11 +40,13 @@ function ProfileHeader({ user, onPictureUpdate }) {
           "Content-Type": "multipart/form-data",
         },
       });
+
       setSuccess(res.data.message || "Picture uploaded successfully");
       setError("");
       setPicture(null);
+
       if (res.data.pictureUrl) {
-        onPictureUpdate(res.data.pictureUrl);
+        onPictureUpdate(res.data.pictureUrl); // Can be filename or full URL
       }
     } catch (err) {
       setError(err.response?.data?.message || "Failed to upload picture");
@@ -39,12 +54,6 @@ function ProfileHeader({ user, onPictureUpdate }) {
       console.error("Upload error:", err);
     }
   };
-
-  // *** CHANGE: Use environment variable to build full image URL to avoid mixed content ***
-  const imageBaseUrl = process.env.REACT_APP_IMAGE_BASE_URL || "";
-  const profileImage = user?.picture
-    ? `${imageBaseUrl}/uploads/${user.picture}`
-    : "/images/default-profile.png";
 
   return (
     <Card className="mb-4">
